@@ -158,6 +158,12 @@ Please note that some APIs used have rate limits:
 
 The application automatically handles rate limits by falling back to alternative services when needed.
 
+## Support the Project
+
+<a href="https://www.buymeacoffee.com/dumbware" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="60">
+</a>
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
