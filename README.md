@@ -49,8 +49,10 @@ The application uses the following free services:
      - Free with no rate limits
      - No API key required
 
-- **ASN Lookup**: [BGPView API](https://bgpview.docs.apiary.io/)
-  - Provides ASN details and related information
+- **ASN Lookup**: [RIPEstat API](https://stat.ripe.net/docs/data-api/ripestat-data-api) + [PeeringDB](https://www.peeringdb.com/apidocs/)
+  - RIPEstat provides ASN details and WHOIS information
+  - PeeringDB provides traffic ratio and website info
+  - Works for all RIRs (ARIN, RIPE, APNIC, LACNIC, AFRINIC)
   - Free to use
   - No authentication required
 
@@ -154,7 +156,8 @@ Please note that some APIs used have rate limits:
 - ipapi.co: 1000 requests per day (free tier)
 - ip-api.com: 45 requests per minute
 - ipwho.is: No rate limits
-- BGPView: unknown rate limit waiting for reply.
+- RIPEstat: No strict rate limits (fair use policy)
+- PeeringDB: No strict rate limits (fair use policy)
 
 The application automatically handles rate limits by falling back to alternative services when needed.
 
