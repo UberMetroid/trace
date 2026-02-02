@@ -266,6 +266,153 @@ const ipLookupServices = [
     }
 ];
 
+// Helper function to fetch ASN data from RIPEstat and PeeringDB
+async function fetchASNData(asnNumber) {
+    // RIPEstat whois endpoint provides comprehensive ASN information
+    // Works for all RIRs: ARIN, RIPE, APNIC, LACNIC, AFRINIC
+    const whoisUrl = `https://stat.ripe.net/data/whois/data.json?resource=AS${asnNumber}`;
+    const overviewUrl = `https://stat.ripe.net/data/as-overview/data.json?resource=AS${asnNumber}`;
+    const peeringDbUrl = `https://www.peeringdb.com/api/net?asn=${asnNumber}`;
+
+    // Fetch all endpoints in parallel (PeeringDB is optional, don't fail if unavailable)
+    const [whoisResponse, overviewResponse, peeringDbResponse] = await Promise.all([
+        axios.get(whoisUrl),
+        axios.get(overviewUrl),
+        axios.get(peeringDbUrl).catch(() => ({ data: { data: [] } }))
+    ]);
+
+    const whoisData = whoisResponse.data;
+    const overviewData = overviewResponse.data;
+    const peeringDbData = peeringDbResponse.data?.data?.[0] || {};
+
+    // Parse WHOIS records to extract relevant fields
+    const records = whoisData.data?.records || [];
+    const flatRecords = records.flat();
+
+    // Helper to find value by key in WHOIS records (case-insensitive)
+    const findValue = (key) => {
+        const record = flatRecords.find(r => r.key?.toLowerCase() === key.toLowerCase());
+        return record?.value || '';
+    };
+
+    // Helper to find all values by key (case-insensitive)
+    const findAllValues = (key) => {
+        return flatRecords
+            .filter(r => r.key?.toLowerCase() === key.toLowerCase())
+            .map(r => r.value)
+            .filter(Boolean);
+    };
+
+    // Determine RIR from source field or authority
+    const source = findValue('source') || whoisData.data?.authorities?.[0] || '';
+    const isARIN = source.toUpperCase() === 'ARIN';
+
+    // Extract holder info from overview (format: "NAME - Description, CC")
+    const holder = overviewData.data?.holder || '';
+    const holderParts = holder.split(' - ');
+    const name = holderParts[0] || findValue('as-name') || findValue('ASName') || findValue('aut-num');
+
+    // Try to extract country code from holder or WHOIS
+    let countryCode = findValue('country');
+    if (!countryCode && holder) {
+        // Try to extract from holder string (e.g., "CLOUDFLARENET - Cloudflare, Inc., US")
+        const ccMatch = holder.match(/,\s*([A-Z]{2})$/);
+        if (ccMatch) countryCode = ccMatch[1];
+    }
+
+    // Extract description - ARIN uses OrgName, RIPE uses descr
+    const descriptions = findAllValues('descr');
+    const orgName = findValue('OrgName');
+    const description = descriptions[0] || orgName || (holderParts.length > 1 ? holderParts.slice(1).join(' - ') : '');
+
+    // Extract email contacts - handle both RIPE and ARIN formats
+    let emailContacts = findAllValues('e-mail');
+    if (emailContacts.length === 0) {
+        // ARIN format: OrgTechEmail, OrgNOCEmail
+        const techEmail = findAllValues('OrgTechEmail');
+        const nocEmail = findAllValues('OrgNOCEmail');
+        emailContacts = [...new Set([...techEmail, ...nocEmail])];
+    }
+    // Fallback to contact handles if no emails found
+    if (emailContacts.length === 0) {
+        const techC = findAllValues('tech-c');
+        const adminC = findAllValues('admin-c');
+        emailContacts = [...techC, ...adminC];
+    }
+
+    // Extract abuse contacts - handle both RIPE and ARIN formats
+    let abuseContacts = findAllValues('abuse-mailbox');
+    if (abuseContacts.length === 0) {
+        // ARIN format: OrgAbuseEmail
+        abuseContacts = findAllValues('OrgAbuseEmail');
+    }
+    if (abuseContacts.length === 0) {
+        abuseContacts = findAllValues('abuse-c');
+    }
+
+    // Extract address - handle both RIPE and ARIN formats
+    const remarks = findAllValues('remarks');
+    let ownerAddress = findAllValues('address');
+
+    if (ownerAddress.length === 0 && isARIN) {
+        // ARIN uses separate fields: Address, City, StateProv, PostalCode, Country
+        const streetAddr = findValue('Address');
+        const city = findValue('City');
+        const state = findValue('StateProv');
+        const postal = findValue('PostalCode');
+        const addrCountry = findValue('Country');
+
+        const addrParts = [streetAddr];
+        if (city || state || postal) {
+            addrParts.push([city, state, postal].filter(Boolean).join(', '));
+        }
+        if (addrCountry) addrParts.push(addrCountry);
+        ownerAddress = addrParts.filter(Boolean);
+    }
+
+    if (ownerAddress.length === 0) {
+        ownerAddress = remarks.filter(r => !r.includes('http'));
+    }
+
+    const rirMap = {
+        'RIPE': 'RIPE NCC',
+        'ARIN': 'ARIN',
+        'APNIC': 'APNIC',
+        'LACNIC': 'LACNIC',
+        'AFRINIC': 'AFRINIC',
+        'RADB': 'RADB'
+    };
+    const rirName = rirMap[source.toUpperCase()] || source || 'Unknown';
+
+    // Extract dates - handle both RIPE and ARIN formats
+    // ARIN uses RegDate, RIPE uses created
+    const created = findValue('created') || findValue('RegDate') || findValue('reg-date');
+    const lastModified = findValue('last-modified') || findValue('Updated') || findValue('changed');
+
+    // Extract website - prefer PeeringDB, fallback to WHOIS remarks
+    const website = peeringDbData.website || remarks.find(r => r.includes('http')) || '';
+
+    // Build response in BGPView-compatible format
+    return {
+        data: {
+            asn: parseInt(asnNumber),
+            name: name,
+            description_short: description,
+            country_code: countryCode,
+            website: website,
+            email_contacts: emailContacts,
+            abuse_contacts: abuseContacts.length > 0 ? abuseContacts : emailContacts,
+            owner_address: ownerAddress,
+            rir_allocation: {
+                rir_name: rirName,
+                date_allocated: created
+            },
+            traffic_ratio: peeringDbData.info_ratio || null,  // From PeeringDB
+            date_updated: lastModified
+        }
+    };
+}
+
 // Helper function to try IP lookup services in sequence
 async function tryIpLookup(ip) {
     // Remove brackets and CIDR notation for the lookup
@@ -361,7 +508,8 @@ app.get('/api/lookup/:query', async (req, res) => {
             case 'asn':
                 // Remove 'AS' prefix if present
                 const asnNumber = query.replace(/^(AS|as)/i, '');
-                response = await axios.get(`https://api.bgpview.io/asn/${asnNumber}`);
+                const asnData = await fetchASNData(asnNumber);
+                response = { data: asnData };
                 break;
             default:
                 return res.status(400).json({ 

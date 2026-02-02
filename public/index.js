@@ -419,7 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 queryTypeDiv.textContent = `Type: ${data.type.toUpperCase()}${
                     data.type === 'ip' ? ` (Source: ${data.data.source})` :
-                    data.type === 'asn' ? ' (Source: BGPView)' :
+                    data.type === 'asn' ? ' (Source: RIPEstat + PeeringDB)' :
                     data.type === 'whois' ? ' (Source: Direct WHOIS Server)' : ''
                 }`;
                 
