@@ -7,5 +7,9 @@ services:
     ports:
       - ${PORT:-4404}:4404
     environment:
-      - SITE_TITLE=${SITE_TITLE:-RustWho}
-      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-*}
+      PORT: 4404
+      SITE_TITLE: ${SITE_TITLE:-RustWho}
+      RUSTWHO_PIN: ${RUSTWHO_PIN:-}
+      BASE_URL: ${BASE_URL:-http://localhost:4404}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
+      TZ: ${TZ:-UTC}
