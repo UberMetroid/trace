@@ -57,7 +57,10 @@ impl AppConfig {
             .ok()
             .and_then(|p| p.parse().ok())
             .unwrap_or(4404);
-        let site_title = std::env::var("SITE_TITLE").unwrap_or_else(|_| "RustWho".to_string());
+        let site_title = std::env::var("RUSTWHO_TITLE")
+            .or_else(|_| std::env::var("RUSTWHO_SITE_TITLE"))
+            .or_else(|_| std::env::var("SITE_TITLE"))
+            .unwrap_or_else(|_| "RustWho".to_string());
         let pin = std::env::var("RUSTWHO_PIN")
             .or_else(|_| std::env::var("PIN"))
             .ok()
