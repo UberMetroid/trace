@@ -158,7 +158,18 @@ impl Component for App {
 
     fn create(ctx: &Context<Self>) -> Self {
         let language = get_saved_language();
-        let theme = StorageService::get_item("theme", "dark");
+        let raw_theme = StorageService::get_item("theme", "crateria");
+        let theme = match raw_theme.as_str() {
+            "light" => "brinstar".to_string(),
+            "dark" => "crateria".to_string(),
+            "nord" => "maridia".to_string(),
+            "dracula" => "wrecked_ship".to_string(),
+            "sepia" => "norfair".to_string(),
+            t => t.to_string(),
+        };
+        if theme != raw_theme {
+            StorageService::set_item("theme", &theme);
+        }
 
         // Apply theme immediately on startup
         if let Some(window) = web_sys::window()
@@ -372,11 +383,12 @@ impl Component for App {
             }
             Msg::ToggleTheme => {
                 self.theme = match self.theme.as_str() {
-                    "light" => "dark".to_string(),
-                    "dark" => "nord".to_string(),
-                    "nord" => "dracula".to_string(),
-                    "dracula" => "sepia".to_string(),
-                    _ => "light".to_string(),
+                    "crateria" => "brinstar".to_string(),
+                    "brinstar" => "norfair".to_string(),
+                    "norfair" => "wrecked_ship".to_string(),
+                    "wrecked_ship" => "maridia".to_string(),
+                    "maridia" => "tourian".to_string(),
+                    _ => "crateria".to_string(),
                 };
                 StorageService::set_item("theme", &self.theme);
                 if let Some(window) = web_sys::window()

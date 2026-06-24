@@ -1228,11 +1228,11 @@ async fn handle_lookup(
             .get("x-pin")
             .and_then(|h| h.to_str().ok())
             .map(|s| s.to_string());
-        let provided_pin = cookie_pin.or(header_pin);
 
-        let authenticated = match provided_pin {
-            Some(prov) => safe_compare(&prov, pin),
-            None => false,
+        let authenticated = match (cookie_pin, header_pin) {
+            (Some(cookie), _) => safe_compare(&cookie, &hash_pin(pin)),
+            (None, Some(hdr)) => safe_compare(&hdr, pin),
+            (None, None) => false,
         };
 
         if !authenticated {
@@ -1370,6 +1370,14 @@ fn safe_compare(a: &str, b: &str) -> bool {
     result == 0
 }
 
+fn hash_pin(pin: &str) -> String {
+    use sha2::{Digest, Sha256};
+    let mut hasher = Sha256::new();
+    hasher.update(pin.as_bytes());
+    let result = hasher.finalize();
+    format!("{:x}", result)
+}
+
 #[derive(Deserialize)]
 struct VerifyPinPayload {
     pin: Option<String>,
@@ -1410,7 +1418,7 @@ async fn verify_pin(
             axum::http::header::SET_COOKIE,
             axum::http::header::HeaderValue::from_str(&format!(
                 "RUSTWHO_PIN={}; Path=/; HttpOnly; SameSite=Lax",
-                pin_str
+                hash_pin(pin_str)
             ))
             .unwrap(),
         );
@@ -1464,11 +1472,11 @@ async fn auth_check(
             .get("x-pin")
             .and_then(|h| h.to_str().ok())
             .map(|s| s.to_string());
-        let provided_pin = cookie_pin.or(header_pin);
 
-        let authenticated = match provided_pin {
-            Some(prov) => safe_compare(&prov, pin),
-            None => false,
+        let authenticated = match (cookie_pin, header_pin) {
+            (Some(cookie), _) => safe_compare(&cookie, &hash_pin(pin)),
+            (None, Some(hdr)) => safe_compare(&hdr, pin),
+            (None, None) => false,
         };
 
         if !authenticated {
