@@ -1,7 +1,7 @@
 # Trace - Blazing Fast WHOIS & IP Lookup
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/UberMetroid/trace/main/main/frontend/Assets/assets/logo.png" alt="Trace Logo" width="128" height="128">
+  <img src="https://raw.githubusercontent.com/UberMetroid/trace/main/frontend/Assets/assets/logo.png" alt="Trace Logo" width="128" height="128">
 </p>
 
 Trace is a clean, secure, and lightning-fast WHOIS, IP, and ASN lookup web utility built in Rust.
