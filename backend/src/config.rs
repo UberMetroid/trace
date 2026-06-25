@@ -25,12 +25,12 @@ impl AppConfig {
             .and_then(|p| p.parse().ok())
             .unwrap_or(4404);
 
-        let site_title = std::env::var("RUSTWHO_TITLE")
-            .or_else(|_| std::env::var("RUSTWHO_SITE_TITLE"))
+        let site_title = std::env::var("TRACE_TITLE")
+            .or_else(|_| std::env::var("TRACE_SITE_TITLE"))
             .or_else(|_| std::env::var("SITE_TITLE"))
-            .unwrap_or_else(|_| "RustWho".to_string());
+            .unwrap_or_else(|_| "Trace".to_string());
 
-        let pin = std::env::var("RUSTWHO_PIN")
+        let pin = std::env::var("TRACE_PIN")
             .or_else(|_| std::env::var("PIN"))
             .ok()
             .filter(|p| {

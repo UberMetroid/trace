@@ -26,7 +26,7 @@ RUN cargo build --release --bin backend
 
 # Stage 3: Final package
 FROM alpine:latest
-LABEL org.opencontainers.image.source="https://github.com/UberMetroid/RustWho"
+LABEL org.opencontainers.image.source="https://github.com/UberMetroid/Trace"
 WORKDIR /app
 
 # Install runtime dependencies (ca-certificates for external API queries, wget for health checks)
@@ -36,7 +36,7 @@ ENV PORT=4404
 ENV NODE_ENV=production
 ENV LOG_DIR=/app/log
 
-COPY --from=backend-builder /app/target/release/backend ./rustwho
+COPY --from=backend-builder /app/target/release/backend ./trace
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
 RUN chown -R 99:100 /app
@@ -49,4 +49,4 @@ EXPOSE 4404
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s CMD wget -qO- http://localhost:4404/health || exit 1
 
-CMD ["./rustwho"]
+CMD ["./trace"]

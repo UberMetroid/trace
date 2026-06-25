@@ -1,12 +1,12 @@
 [package]
 name = "frontend"
-version = "1.0.2"
+version = "2.0.0"
 edition = "2024"
 authors = ["UberMetroid <admin@ubermetroid.com>"]
 license = "Apache-2.0"
-repository = "https://github.com/UberMetroid/RustWho"
-homepage = "https://github.com/UberMetroid/RustWho"
-description = "Yew frontend application for RustWho."
+repository = "https://github.com/UberMetroid/Trace"
+homepage = "https://github.com/UberMetroid/Trace"
+description = "Yew frontend application for Trace."
 readme = "../README.md"
 
 [dependencies]

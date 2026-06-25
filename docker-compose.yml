@@ -1,15 +1,15 @@
 services:
-  rustwho:
-    image: ubermetroid/rustwho:latest
+  trace:
+    image: ubermetroid/trace:latest
     build: .
-    container_name: rustwho
+    container_name: trace
     restart: unless-stopped
     ports:
       - ${PORT:-4404}:4404
     environment:
       PORT: 4404
-      SITE_TITLE: ${SITE_TITLE:-RustWho}
-      RUSTWHO_PIN: ${RUSTWHO_PIN:-}
+      SITE_TITLE: ${SITE_TITLE:-Trace}
+      TRACE_PIN: ${TRACE_PIN:-}
       BASE_URL: ${BASE_URL:-http://localhost:4404}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
       TZ: ${TZ:-UTC}

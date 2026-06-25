@@ -23,7 +23,7 @@ impl App {
 
         Self {
             query: String::new(),
-            site_title: "RustWho".to_string(),
+            site_title: "Trace".to_string(),
             theme,
             language,
             loading: false,
