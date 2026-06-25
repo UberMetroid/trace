@@ -1,5 +1,5 @@
 {
-  description = "Minimalist Nix-built container for RustWho";
+  description = "Minimalist Nix-built container for Trace";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -21,10 +21,14 @@
         };
 
         # 1. Build the WASM frontend
-        frontend = pkgs.stdenv.mkDerivation {
-          pname = "rustwho-frontend";
-          version = "1.0.0";
+        frontend = rustPlatform.buildRustPackage {
+          pname = "trace-frontend";
+          version = "2.0.0";
           src = ./.;
+
+          cargoLock = {
+            lockFile = ./Cargo.lock;
+          };
 
           nativeBuildInputs = [
             rustVersion
@@ -46,8 +50,8 @@
 
         # 2. Build the Axum backend
         backend = rustPlatform.buildRustPackage {
-          pname = "rustwho-backend";
-          version = "1.0.0";
+          pname = "trace-backend";
+          version = "2.0.0";
           src = ./.;
 
           cargoLock = {
@@ -71,7 +75,7 @@
 
         # 3. Create the layered Docker container image
         dockerImage = pkgs.dockerTools.buildLayeredImage {
-          name = "rustwho-nix";
+          name = "trace-nix";
           tag = "latest";
           
           # Run under the nobody user (UID 65534)
