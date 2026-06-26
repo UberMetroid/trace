@@ -4,7 +4,19 @@
   <img src="https://raw.githubusercontent.com/UberMetroid/trace/main/frontend/Assets/assets/logo.png" alt="Trace Logo" width="128" height="128">
 </p>
 
-Trace is a clean, secure, and lightning-fast WHOIS, IP, and ASN lookup web utility built in Rust.
+Trace is a clean, secure, and lightning-fast WHOIS, IP, and ASN lookup web utility. Built with a high-performance Rust (Axum/Tokio) backend and a WebAssembly (Yew) frontend.
+
+---
+
+## ⚡ Key Features
+
+*   **Zebes Themes**: High-quality UI styling options based on the 6 classic Super Metroid regions (Crateria, Brinstar, Norfair, Wrecked Ship, Maridia, Tourian).
+*   **Access PIN Security**: Lock down the interface with an optional numerical PIN for absolute privacy.
+*   **Internationalization**: Built-in multilingual translation selector support.
+*   **Print Optimization**: Customized print stylesheet layout and print header action button.
+*   **Performance First**: Tiny resource footprint, zero external JS engine dependencies, and rapid page load speeds.
+*   **WHOIS Lookups**: Deep queries to global WHOIS databases directly over raw TCP sockets.
+*   **IP Geolocation**: Fallback IP geolocation queries and PeeringDB ASN details.
 
 ---
 
