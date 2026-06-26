@@ -1,7 +1,6 @@
 services:
   trace:
     image: ubermetroid/trace:latest
-    build: .
     container_name: trace
     restart: unless-stopped
     ports:
