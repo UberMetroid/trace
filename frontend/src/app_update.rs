@@ -40,7 +40,7 @@ impl App {
             error_message: None,
             enable_translation: false,
             enable_themes: true,
-            enable_print: true,
+            enable_print: false,
         }
     }
 
