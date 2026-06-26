@@ -11,6 +11,9 @@ use yew::prelude::*;
 impl App {
     pub fn view_app(&self, ctx: &Context<Self>) -> Html {
         let tr = get_translations(self.language);
+        let show_version = self.show_version;
+        let show_github = self.show_github;
+        let version = env!("CARGO_PKG_VERSION").to_string();
 
         let on_input = ctx.link().callback(|e: InputEvent| {
             let input: web_sys::HtmlInputElement = e.target_unchecked_into();
@@ -115,11 +118,11 @@ impl App {
                         </div>
                     }
                 </div>
-                <footer class="layout-footer">
+                <crate::footer::Footer {show_version} {version} {show_github}>
                     <div class={classes!("footer-status-text", self.status_type.clone())}>
                         {&self.status_text}
                     </div>
-                </footer>
+                </crate::footer::Footer>
                 <div class="toast-container">
                     {for self.toasts.iter().map(|t| {
                         let id = t.id;

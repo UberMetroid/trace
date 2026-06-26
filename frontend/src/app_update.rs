@@ -41,6 +41,8 @@ impl App {
             enable_translation: false,
             enable_themes: true,
             enable_print: false,
+            show_version: true,
+            show_github: true,
         }
     }
 
@@ -133,6 +135,16 @@ impl App {
                     .get("enablePrint")
                     .and_then(|v| v.as_bool())
                     .or_else(|| json.get("enable_print").and_then(|v| v.as_bool()))
+                    .unwrap_or(true);
+                self.show_version = json
+                    .get("showVersion")
+                    .and_then(|v| v.as_bool())
+                    .or_else(|| json.get("show_version").and_then(|v| v.as_bool()))
+                    .unwrap_or(true);
+                self.show_github = json
+                    .get("showGithub")
+                    .and_then(|v| v.as_bool())
+                    .or_else(|| json.get("show_github").and_then(|v| v.as_bool()))
                     .unwrap_or(true);
 
                 if !self.enable_themes {

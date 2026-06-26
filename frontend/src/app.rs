@@ -21,6 +21,8 @@ pub struct App {
     pub enable_translation: bool,
     pub enable_themes: bool,
     pub enable_print: bool,
+    pub show_version: bool,
+    pub show_github: bool,
 }
 
 impl Component for App {
