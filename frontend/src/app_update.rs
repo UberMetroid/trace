@@ -109,7 +109,7 @@ impl App {
                     self.site_title = title.to_string();
                     if let Some(window) = web_sys::window() {
                         if let Some(document) = window.document() {
-                            document.set_title(&format!("{} - WHOIS, IP, ASN", self.site_title));
+                            document.set_title(&self.site_title);
                         }
                     }
                 }
