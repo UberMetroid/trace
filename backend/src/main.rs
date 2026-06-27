@@ -30,7 +30,6 @@ use state::AppState;
 
 /// Sliding-window per-IP request budget for the `rate_limit_middleware`.
 const RATE_LIMIT_WINDOW: Duration = Duration::from_secs(60);
-const RATE_LIMIT_MAX: usize = 100;
 
 #[tokio::main]
 async fn main() {

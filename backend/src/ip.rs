@@ -96,12 +96,11 @@ fn parse_public_ip(s: &str) -> Result<IpAddr, String> {
         .split('/')
         .next()
         .unwrap_or("")
-        .trim();
-    let ip = IpAddr::from_str(clean).map_err(|e| format!("invalid IP: {e}"))?;
+        .trim()
+        .to_string();
+    let ip = IpAddr::from_str(&clean).map_err(|e| format!("invalid IP: {e}"))?;
     if is_private_ip(ip) {
-        return Err(format!(
-            "refusing to look up private/internal IP: {ip}"
-        ));
+        return Err(format!("refusing to look up private/internal IP: {ip}"));
     }
     Ok(ip)
 }

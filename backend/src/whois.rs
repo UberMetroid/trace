@@ -440,7 +440,9 @@ mod tests {
     #[tokio::test]
     async fn resolve_public_accepts_hostname_with_port() {
         // host:port syntax should be accepted.
-        let addr = resolve_public_whois_addr("whois.iana.org:43").await.unwrap();
+        let addr = resolve_public_whois_addr("whois.iana.org:43")
+            .await
+            .unwrap();
         assert_eq!(addr.port(), 43);
     }
 

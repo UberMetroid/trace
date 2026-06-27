@@ -25,7 +25,11 @@ pub struct AppState {
 }
 
 impl AppState {
-    pub fn new(config: AppConfig, client: reqwest::Client, upstream_limiter: Arc<UpstreamRateLimiter>) -> Self {
+    pub fn new(
+        config: AppConfig,
+        client: reqwest::Client,
+        upstream_limiter: Arc<UpstreamRateLimiter>,
+    ) -> Self {
         Self {
             config,
             client,
@@ -37,7 +41,12 @@ impl AppState {
 
     /// Per-IP sliding-window rate limit: `max_requests` per `window`.
     /// Defaults to 100 req/60s (configured at the call site).
-    pub async fn check_rate_limit(&self, ip: IpAddr, max_requests: usize, window: Duration) -> bool {
+    pub async fn check_rate_limit(
+        &self,
+        ip: IpAddr,
+        max_requests: usize,
+        window: Duration,
+    ) -> bool {
         let now = Instant::now();
 
         let mut map = self.rate_limiter.write().await;

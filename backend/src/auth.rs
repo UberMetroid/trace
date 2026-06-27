@@ -160,7 +160,7 @@ pub async fn verify_pin(
     let ip_str = ip.to_string();
     let lockout_dur = Duration::from_secs(state.config.lockout_time_minutes * 60);
 
-    if attempts::is_locked_out(&ip_str, state.config.max_attempts, lockout_dur) {
+    if attempts::is_locked_out(&ip_str, state.config.max_attempts as u32, lockout_dur) {
         let remaining = attempts::lockout_remaining_secs(&ip_str, lockout_dur);
         let time_left_min = (remaining as f64 / 60.0).ceil() as u64;
         return (
@@ -222,13 +222,16 @@ pub async fn verify_pin(
             .into_response()
     } else {
         let attempt = attempts::record_attempt(&ip_str);
-        let remaining = state.config.max_attempts.saturating_sub(attempt.count);
+        let remaining = state
+            .config
+            .max_attempts
+            .saturating_sub(attempt.count as usize);
         tracing::warn!(
             target: "auth",
             "failed PIN attempt #{count} from {ip_str}",
             count = attempt.count
         );
-        if attempt.count >= state.config.max_attempts {
+        if attempt.count as usize >= state.config.max_attempts {
             tracing::warn!(target: "auth", "IP {ip_str} locked out");
         }
 
@@ -298,7 +301,7 @@ pub async fn pin_required(
     Json(serde_json::json!({
         "required": state.config.pin.is_some(),
         "length": state.config.pin.as_ref().map(|p| p.len()).unwrap_or(0),
-        "locked": attempts::is_locked_out(&ip_str, state.config.max_attempts, lockout_dur),
+        "locked": attempts::is_locked_out(&ip_str, state.config.max_attempts as u32, lockout_dur),
         "enable_translation": state.config.enable_translation,
         "enable_themes": state.config.enable_themes,
         "enable_print": state.config.enable_print,
@@ -327,7 +330,12 @@ pub async fn rate_limit_middleware(
     // 100 requests per 60 seconds per IP — same numbers as before,
     // just made explicit so it's easy to tune.
     if !state
-        .check_rate_limit(ip, 100, Duration::from_secs(60))
+        .check_rate_limit(
+            ip.parse()
+                .unwrap_or(std::net::IpAddr::V4(std::net::Ipv4Addr::UNSPECIFIED)),
+            100,
+            Duration::from_secs(60),
+        )
         .await
     {
         let body = serde_json::json!({
