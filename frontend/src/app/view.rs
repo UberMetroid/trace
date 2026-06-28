@@ -1,9 +1,9 @@
 use crate::app::App;
-use crate::components::pin_entry::PinEntry;
+use crate::components::pin::PinEntry;
 use crate::components::result_asn::ResultAsn;
 use crate::components::result_ip::ResultIp;
 use crate::components::result_whois::ResultWhois;
-use crate::header::Header;
+use crate::components::header::Header;
 use crate::i18n::get_translations;
 use crate::types::*;
 use yew::prelude::*;
@@ -122,11 +122,11 @@ impl App {
                         </div>
                     }
                 </div>
-                <crate::footer::Footer {show_version} {version} {show_github} {version_url}>
+                <crate::components::footer::Footer {show_version} {version} {show_github} {version_url}>
                     <div class={classes!("footer-status-text", self.status_type.clone())}>
                         {&self.status_text}
                     </div>
-                </crate::footer::Footer>
+                </crate::components::footer::Footer>
                 <div class="toast-container">
                     {for self.toasts.iter().map(|t| {
                         let id = t.id;

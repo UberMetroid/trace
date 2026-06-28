@@ -3,8 +3,6 @@
 mod api;
 mod app;
 mod components;
-mod footer;
-mod header;
 mod i18n;
 mod storage;
 mod types;
