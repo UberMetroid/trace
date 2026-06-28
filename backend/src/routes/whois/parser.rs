@@ -1,6 +1,6 @@
+use super::ParsedWhoisData;
 use crate::dns::{IpAddresses, resolve_dns};
 use std::sync::LazyLock;
-use super::ParsedWhoisData;
 
 static RE_IPV4: LazyLock<regex::Regex> = LazyLock::new(|| {
     regex::Regex::new(r"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b").unwrap()

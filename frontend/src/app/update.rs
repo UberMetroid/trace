@@ -3,11 +3,11 @@ use crate::app::App;
 use crate::i18n::{get_translations, save_language};
 use crate::storage::StorageService;
 use crate::types::*;
-use crate::utils::{get_hash, scroll_to_element, get_query_param};
+use crate::utils::{get_hash, get_query_param, scroll_to_element};
 
 use gloo_net::http::Request;
-use yew::prelude::*;
 use shared_assets::theme::Theme;
+use yew::prelude::*;
 
 impl App {
     pub fn update_app(&mut self, ctx: &Context<Self>, msg: Msg) -> bool {

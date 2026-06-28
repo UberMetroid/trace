@@ -1,9 +1,9 @@
 use crate::app::App;
+use crate::components::header::Header;
 use crate::components::pin::PinEntry;
 use crate::components::result_asn::ResultAsn;
 use crate::components::result_ip::ResultIp;
 use crate::components::result_whois::ResultWhois;
-use crate::components::header::Header;
 use crate::i18n::get_translations;
 use crate::types::*;
 use yew::prelude::*;

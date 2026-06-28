@@ -1,11 +1,15 @@
 use crate::app::App;
 use crate::types::Msg;
-use shared_assets::theme::Theme;
 use gloo_net::http::Request;
+use shared_assets::theme::Theme;
 use yew::prelude::*;
 
 impl App {
-    pub(crate) fn handle_load_config(&mut self, ctx: &Context<Self>, json: serde_json::Value) -> bool {
+    pub(crate) fn handle_load_config(
+        &mut self,
+        ctx: &Context<Self>,
+        json: serde_json::Value,
+    ) -> bool {
         if let Some(title) = json.get("siteTitle").and_then(|v| v.as_str()) {
             self.site_title = title.to_string();
             if let Some(window) = web_sys::window() {
@@ -18,8 +22,7 @@ impl App {
             .get("pinRequired")
             .and_then(|v| v.as_bool())
             .unwrap_or(false);
-        self.pin_length =
-            json.get("pinLength").and_then(|v| v.as_u64()).unwrap_or(0) as usize;
+        self.pin_length = json.get("pinLength").and_then(|v| v.as_u64()).unwrap_or(0) as usize;
         self.enable_translation = json
             .get("enableTranslation")
             .and_then(|v| v.as_bool())

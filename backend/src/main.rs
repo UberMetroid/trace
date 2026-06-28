@@ -11,20 +11,20 @@ use std::time::Duration;
 use tower_http::services::ServeDir;
 use tracing_subscriber::{Layer, layer::SubscriberExt, util::SubscriberInitExt};
 
-mod routes;
 mod asn_types;
 mod config;
 mod dns;
 mod ip;
 mod query;
 mod rate_limit;
+mod routes;
 mod state;
 mod utils;
 
 use config::AppConfig;
 use rate_limit::UpstreamRateLimiter;
-use state::AppState;
 use routes::{auth, lookup};
+use state::AppState;
 
 /// Sliding-window per-IP request budget for the `rate_limit_middleware`.
 const RATE_LIMIT_WINDOW: Duration = Duration::from_secs(60);

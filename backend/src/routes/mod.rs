@@ -1,4 +1,4 @@
-pub mod auth;
 pub mod asn;
-pub mod whois;
+pub mod auth;
 pub mod lookup;
+pub mod whois;

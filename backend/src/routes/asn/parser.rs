@@ -16,17 +16,28 @@ pub fn parse_raw_responses(
     }
 
     let find_value = |key: &str| -> String {
-        flat_records.iter()
-            .find(|r| r.key.as_ref().map_or(false, |k| k.to_lowercase() == key.to_lowercase()))
-            .and_then(|r| r.value.clone()).unwrap_or_default()
+        flat_records
+            .iter()
+            .find(|r| {
+                r.key
+                    .as_ref()
+                    .map_or(false, |k| k.to_lowercase() == key.to_lowercase())
+            })
+            .and_then(|r| r.value.clone())
+            .unwrap_or_default()
     };
 
     let find_all_values = |key: &str| -> Vec<String> {
-        flat_records.iter()
-            .filter(|r| r.key.as_ref().map_or(false, |k| k.to_lowercase() == key.to_lowercase()))
-            .filter_map(|r| r.value.clone()).collect()
+        flat_records
+            .iter()
+            .filter(|r| {
+                r.key
+                    .as_ref()
+                    .map_or(false, |k| k.to_lowercase() == key.to_lowercase())
+            })
+            .filter_map(|r| r.value.clone())
+            .collect()
     };
-
 
     let source = find_value("source");
     let auth = whois_data
