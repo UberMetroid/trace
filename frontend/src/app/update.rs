@@ -6,11 +6,23 @@ use crate::types::*;
 use crate::utils::{get_hash, get_query_param, scroll_to_element};
 use gloo_net::http::Request;
 use yew::prelude::*;
+use shared_assets::theme::{Theme, mapping::Scheme};
 
 impl App {
     pub fn create_app(ctx: &Context<Self>) -> Self {
         let language = get_saved_language();
-        let theme = StorageService::get_item("theme", "crateria");
+        let raw = StorageService::get_item("theme", Theme::default().name());
+        let theme = if let Some(scheme) = Scheme::from_id(&raw) {
+            scheme.to_theme().name().to_string()
+        } else {
+            Theme::from_name(&raw)
+                .unwrap_or_default()
+                .name()
+                .to_string()
+        };
+        if theme != raw {
+            StorageService::set_item("theme", &theme);
+        }
 
         let link = ctx.link().clone();
         wasm_bindgen_futures::spawn_local(async move {
@@ -20,6 +32,7 @@ impl App {
                 }
             }
         });
+
 
         Self {
             query: String::new(),
@@ -148,12 +161,12 @@ impl App {
                     .unwrap_or(true);
 
                 if !self.enable_themes {
-                    self.theme = "tourian".to_string();
+                    self.theme = Theme::Tourian.name().to_string();
                     if let Some(window) = web_sys::window() {
                         if let Some(doc) = window.document() {
                             if let Some(html) = doc.document_element() {
-                                let _ = html.set_attribute("data-theme", "tourian");
-                                html.set_class_name("tourian");
+                                let _ = html.set_attribute("data-theme", Theme::Tourian.name());
+                                html.set_class_name(Theme::Tourian.name());
                             }
                         }
                     }
@@ -244,14 +257,16 @@ impl App {
                 true
             }
             Msg::ToggleTheme => {
-                self.theme = match self.theme.as_str() {
-                    "crateria" => "brinstar".to_string(),
-                    "brinstar" => "norfair".to_string(),
-                    "norfair" => "wrecked_ship".to_string(),
-                    "wrecked_ship" => "maridia".to_string(),
-                    "maridia" => "tourian".to_string(),
-                    _ => "crateria".to_string(),
+                let current = Theme::from_name(&self.theme).unwrap_or_default();
+                let next = match current {
+                    Theme::Brinstar => Theme::Norfair,
+                    Theme::Norfair => Theme::WreckedShip,
+                    Theme::WreckedShip => Theme::Maridia,
+                    Theme::Maridia => Theme::Tourian,
+                    Theme::Tourian => Theme::Crateria,
+                    Theme::Crateria => Theme::Brinstar,
                 };
+                self.theme = next.name().to_string();
                 StorageService::set_item("theme", &self.theme);
                 if let Some(window) = web_sys::window() {
                     if let Some(doc) = window.document() {
