@@ -9,40 +9,24 @@ pub fn parse_raw_responses(
     let peering_db_net = peering_db_data.data.as_ref().and_then(|v| v.first());
 
     let mut flat_records = Vec::new();
-    if let Some(data) = whois_data.data.as_ref() {
-        if let Some(records) = data.records.as_ref() {
-            for record_list in records {
-                for r in record_list {
-                    flat_records.push(r);
-                }
-            }
+    if let Some(records) = whois_data.data.as_ref().and_then(|d| d.records.as_ref()) {
+        for record_list in records {
+            flat_records.extend(record_list);
         }
     }
 
     let find_value = |key: &str| -> String {
-        flat_records
-            .iter()
-            .find(|r| {
-                r.key
-                    .as_ref()
-                    .map_or(false, |k| k.to_lowercase() == key.to_lowercase())
-            })
-            .and_then(|r| r.value.clone())
-            .unwrap_or_default()
+        flat_records.iter()
+            .find(|r| r.key.as_ref().map_or(false, |k| k.to_lowercase() == key.to_lowercase()))
+            .and_then(|r| r.value.clone()).unwrap_or_default()
     };
 
     let find_all_values = |key: &str| -> Vec<String> {
-        flat_records
-            .iter()
-            .filter_map(|r| {
-                let matches = r
-                    .key
-                    .as_ref()
-                    .map_or(false, |k| k.to_lowercase() == key.to_lowercase());
-                if matches { r.value.clone() } else { None }
-            })
-            .collect()
+        flat_records.iter()
+            .filter(|r| r.key.as_ref().map_or(false, |k| k.to_lowercase() == key.to_lowercase()))
+            .filter_map(|r| r.value.clone()).collect()
     };
+
 
     let source = find_value("source");
     let auth = whois_data
