@@ -1,5 +1,5 @@
-pub mod parser;
 pub mod helpers;
+pub mod parser;
 
 use crate::asn_types::*;
 use crate::rate_limit::UpstreamRateLimiter;

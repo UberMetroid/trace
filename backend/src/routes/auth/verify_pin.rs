@@ -10,8 +10,8 @@ use shared_backend::server::get_client_ip;
 use std::net::SocketAddr;
 use std::time::Duration;
 
-use crate::state::AppState;
 use super::{COOKIE_NAME, VerifyPinPayload};
+use crate::state::AppState;
 
 pub fn generate_session_id() -> String {
     use std::fs::File;

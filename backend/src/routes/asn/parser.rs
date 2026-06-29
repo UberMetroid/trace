@@ -1,5 +1,5 @@
-use crate::asn_types::*;
 use super::helpers::{build_arin_address, extract_created, extract_last_modified};
+use crate::asn_types::*;
 
 pub fn parse_raw_responses(
     asn_val: u32,

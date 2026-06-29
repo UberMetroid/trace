@@ -19,9 +19,9 @@ mod state;
 pub mod utils;
 
 use config::AppConfig;
-pub use services::{dns, ip, query, rate_limit};
-use services::rate_limit::UpstreamRateLimiter;
 use routes::{auth, lookup};
+use services::rate_limit::UpstreamRateLimiter;
+pub use services::{dns, ip, query, rate_limit};
 use state::AppState;
 
 /// Sliding-window per-IP request budget for the `rate_limit_middleware`.
