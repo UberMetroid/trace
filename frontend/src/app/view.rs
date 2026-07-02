@@ -11,13 +11,8 @@ use yew::prelude::*;
 impl App {
     pub fn view_app(&self, ctx: &Context<Self>) -> Html {
         let tr = get_translations(self.language);
-        let show_version = self.show_version;
         let show_github = self.show_github;
         let version = env!("CARGO_PKG_VERSION").to_string();
-        let version_url = format!(
-            "https://github.com/UberMetroid/trace/releases/tag/v{}",
-            version
-        );
 
         let on_input = ctx.link().callback(|e: InputEvent| {
             let input: web_sys::HtmlInputElement = e.target_unchecked_into();
@@ -43,14 +38,14 @@ impl App {
                     pin_required={self.pin_required}
                     on_logout={ctx.link().callback(|_| Msg::Logout)}
                     logout_tooltip={tr.logout_tooltip.to_string()}
-                    on_print={ctx.link().callback(|_| Msg::PrintPage)}
+                    on_print={Some(ctx.link().callback(|_| Msg::PrintPage))}
                     print_tooltip={tr.print_tooltip.to_string()}
                     print_disabled={!self.enable_print || self.response.is_none()}
                     theme_toggle_tooltip={tr.toggle_theme.to_string()}
                     enable_translation={self.enable_translation}
                     enable_themes={self.enable_themes}
                     enable_print={self.enable_print}
-
+                    version={Some(version.clone())}
                 />
                 <div class="container">
                     if !self.is_authenticated {
@@ -123,22 +118,11 @@ impl App {
                         </div>
                     }
                 </div>
-                <crate::components::footer::Footer {show_version} {version} {show_github} {version_url}>
+                <crate::components::footer::Footer version={version.clone()} show_github={show_github}>
                     <div class={classes!("footer-status-text", self.status_type.clone())}>
                         {&self.status_text}
                     </div>
                 </crate::components::footer::Footer>
-                <div class="toast-container">
-                    {for self.toasts.iter().map(|t| {
-                        let id = t.id;
-                        let dismiss = ctx.link().callback(move |_| Msg::DismissToast(id));
-                        html! {
-                            <div class={classes!("toast", if t.is_error { "error" } else { "success" })} onclick={dismiss}>
-                                {&t.message}
-                            </div>
-                        }
-                    })}
-                </div>
             </>
         }
     }
