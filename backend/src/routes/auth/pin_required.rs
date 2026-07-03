@@ -27,19 +27,19 @@ pub async fn pin_required(
     let ip = get_client_ip(
         &headers,
         addr,
-        state.config.trust_proxy,
-        &state.config.trusted_proxies,
+        state.config.0.trust_proxy,
+        &state.config.0.trusted_proxies,
     );
     let ip_str = ip.to_string();
-    let lockout_dur = Duration::from_secs(state.config.lockout_time_minutes * 60);
+    let lockout_dur = Duration::from_secs(state.config.0.lockout_time_minutes * 60);
     Json(serde_json::json!({
-        "required": state.config.pin.is_some(),
-        "length": state.config.pin.as_ref().map(|p| p.len()).unwrap_or(0),
-        "locked": attempts::is_locked_out(&ip_str, state.config.max_attempts as u32, lockout_dur),
-        "enable_translation": state.config.enable_translation,
-        "enable_themes": state.config.enable_themes,
-        "enable_print": state.config.enable_print,
-        "show_version": state.config.show_version,
-        "show_github": state.config.show_github,
+        "required": state.config.0.pin.is_some(),
+        "length": state.config.0.pin.as_ref().map(|p| p.len()).unwrap_or(0),
+        "locked": attempts::is_locked_out(&ip_str, state.config.0.max_attempts as u32, lockout_dur),
+        "enable_translation": state.config.0.enable_translation,
+        "enable_themes": state.config.0.enable_themes,
+        "enable_print": state.config.0.enable_print,
+        "show_version": state.config.0.show_version,
+        "show_github": state.config.0.show_github,
     }))
 }

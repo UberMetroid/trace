@@ -31,7 +31,7 @@ pub struct VerifyPinPayload {
 /// (not the raw PIN), so constant-time comparison is defense in depth
 /// against timing leaks of the session-id table.
 pub async fn is_authenticated(headers: &HeaderMap, state: &AppState) -> bool {
-    let pin = match &state.config.pin {
+    let pin = match &state.config.0.pin {
         Some(p) => p,
         None => return true,
     };
@@ -72,7 +72,7 @@ pub async fn origin_validation_middleware(
     req: axum::extract::Request,
     next: Next,
 ) -> Result<Response, StatusCode> {
-    let origins_env = &state.config.allowed_origins;
+    let origins_env = &state.config.0.allowed_origins;
     if origins_env == "*" {
         return Ok(next.run(req).await);
     }
@@ -136,8 +136,8 @@ pub async fn rate_limit_middleware(
     let ip = get_client_ip(
         req.headers(),
         addr.unwrap_or_else(|| SocketAddr::from(([127, 0, 0, 1], 0))),
-        state.config.trust_proxy,
-        &state.config.trusted_proxies,
+        state.config.0.trust_proxy,
+        &state.config.0.trusted_proxies,
     );
 
     // 100 requests per 60 seconds per IP

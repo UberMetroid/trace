@@ -5,11 +5,11 @@ use shared_backend::middleware::{
     HstsState, TitleState, cors_layer, hsts_layer, security_headers_layer, title_injection_layer,
 };
 use shared_backend::server::ServerConfig;
+use shared_backend::tracing_init::{default_log_dir, init_tracing};
 use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::Duration;
 use tower_http::services::ServeDir;
-use tracing_subscriber::{Layer, layer::SubscriberExt, util::SubscriberInitExt};
 
 mod asn_types;
 mod config;
@@ -29,59 +29,7 @@ const RATE_LIMIT_WINDOW: Duration = Duration::from_secs(60);
 
 #[tokio::main]
 async fn main() {
-    let log_dir = std::env::var("LOG_DIR").ok().or_else(|| {
-        let data_dir = std::path::Path::new("/app/data");
-        if data_dir.is_dir() {
-            Some("/app/data/log".to_string())
-        } else {
-            Some("/app/log".to_string())
-        }
-    });
-
-    let (file_layer_error, file_layer_app) = if let Some(ref dir) = log_dir {
-        if dir == "off" || dir == "none" || dir == "false" {
-            (None, None)
-        } else {
-            let _ = std::fs::create_dir_all(dir);
-            let error_file = std::fs::OpenOptions::new()
-                .create(true)
-                .append(true)
-                .open(std::path::Path::new(dir).join("error.log"))
-                .ok();
-            let app_file = std::fs::OpenOptions::new()
-                .create(true)
-                .append(true)
-                .open(std::path::Path::new(dir).join("app.log"))
-                .ok();
-
-            let error_layer = error_file.map(|file| {
-                tracing_subscriber::fmt::layer()
-                    .with_writer(std::sync::Mutex::new(file))
-                    .with_ansi(false)
-                    .with_filter(tracing_subscriber::filter::LevelFilter::WARN)
-            });
-
-            let app_layer = app_file.map(|file| {
-                tracing_subscriber::fmt::layer()
-                    .with_writer(std::sync::Mutex::new(file))
-                    .with_ansi(false)
-                    .with_filter(tracing_subscriber::filter::LevelFilter::INFO)
-            });
-
-            (error_layer, app_layer)
-        }
-    } else {
-        (None, None)
-    };
-
-    tracing_subscriber::registry()
-        .with(
-            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()),
-        )
-        .with(tracing_subscriber::fmt::layer())
-        .with(file_layer_error)
-        .with(file_layer_app)
-        .init();
+    init_tracing(default_log_dir().as_deref());
 
     let config = AppConfig::load();
     let client = reqwest::Client::builder()
@@ -92,7 +40,7 @@ async fn main() {
     let upstream_limiter = Arc::new(UpstreamRateLimiter::new());
     let state = AppState::new(config.clone(), client, upstream_limiter.clone());
 
-    lookup::generate_pwa_manifest(&config.site_title);
+    lookup::generate_pwa_manifest(&config.0.site_title);
 
     // Background cleanup. PIN-attempt lockouts are now global via
     // shared-backend and clean themselves up; we only need to clean the
@@ -166,7 +114,7 @@ async fn main() {
         .layer(cors)
         .with_state(state);
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], config.port));
+    let addr = SocketAddr::from(([0, 0, 0, 0], config.0.port));
     tracing::info!("Starting server on {}", addr);
 
     let listener = tokio::net::TcpListener::bind(addr)

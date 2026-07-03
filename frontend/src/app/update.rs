@@ -1,11 +1,11 @@
 use crate::api::fetch_lookup;
 use crate::app::App;
 use crate::i18n::{get_translations, save_language};
-use crate::storage::StorageService;
 use crate::types::*;
 use crate::utils::{get_hash, get_query_param, scroll_to_element};
 
 use gloo_net::http::Request;
+use shared_frontend::storage::StorageService;
 use shared_frontend::theme::Theme;
 use shared_frontend::i18n::strings::{lookup, StringKey};
 use yew::prelude::*;
@@ -154,7 +154,7 @@ impl App {
                     Theme::Crateria => Theme::Brinstar,
                 };
                 self.theme = next.name().to_string();
-                StorageService::set_item("theme", &self.theme);
+                StorageService::new().set_item("theme", &self.theme);
                 if let Some(window) = web_sys::window() {
                     if let Some(doc) = window.document() {
                         if let Some(html) = doc.document_element() {

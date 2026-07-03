@@ -1,15 +1,20 @@
 use crate::app::App;
 use crate::i18n::get_saved_language;
-use crate::storage::StorageService;
 use crate::types::Msg;
 use gloo_net::http::Request;
+use shared_frontend::storage::StorageService;
 use shared_frontend::theme::{Theme, mapping::Scheme};
 use yew::prelude::*;
 
 impl App {
     pub fn create_app(ctx: &Context<Self>) -> Self {
         let language = get_saved_language();
-        let raw = StorageService::get_item("theme", Theme::default().name());
+        let raw = StorageService::new().get_item("theme");
+        let raw = if raw.is_empty() {
+            Theme::default().name().to_string()
+        } else {
+            raw
+        };
         let theme = if let Some(scheme) = Scheme::from_id(&raw) {
             scheme.to_theme().name().to_string()
         } else {
@@ -19,7 +24,7 @@ impl App {
                 .to_string()
         };
         if theme != raw {
-            StorageService::set_item("theme", &theme);
+            StorageService::new().set_item("theme", &theme);
         }
 
         let link = ctx.link().clone();

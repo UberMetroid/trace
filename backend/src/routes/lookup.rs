@@ -19,15 +19,15 @@ static START_TIME: LazyLock<Instant> = LazyLock::new(Instant::now);
 
 pub async fn serve_config(State(state): State<AppState>) -> impl IntoResponse {
     Json(serde_json::json!({
-        "siteTitle": state.config.site_title,
-        "pinRequired": state.config.pin.is_some(),
-        "pinLength": state.config.pin.as_ref().map_or(0, |p| p.len()),
-        "enableTranslation": state.config.enable_translation,
-        "enable_translation": state.config.enable_translation,
-        "enableThemes": state.config.enable_themes,
-        "enable_themes": state.config.enable_themes,
-        "enablePrint": state.config.enable_print,
-        "enable_print": state.config.enable_print,
+        "siteTitle": state.config.0.site_title,
+        "pinRequired": state.config.0.pin.is_some(),
+        "pinLength": state.config.0.pin.as_ref().map_or(0, |p| p.len()),
+        "enableTranslation": state.config.0.enable_translation,
+        "enable_translation": state.config.0.enable_translation,
+        "enableThemes": state.config.0.enable_themes,
+        "enable_themes": state.config.0.enable_themes,
+        "enablePrint": state.config.0.enable_print,
+        "enable_print": state.config.0.enable_print,
     }))
 }
 
@@ -43,7 +43,7 @@ pub async fn serve_index(State(state): State<AppState>) -> impl IntoResponse {
     let path = StdPath::new("frontend/dist/index.html");
     match tokio::fs::read_to_string(path).await {
         Ok(content) => {
-            let rendered = content.replace("{{SITE_TITLE}}", &state.config.site_title);
+            let rendered = content.replace("{{SITE_TITLE}}", &state.config.0.site_title);
             Html(rendered).into_response()
         }
         Err(_) => StatusCode::NOT_FOUND.into_response(),
