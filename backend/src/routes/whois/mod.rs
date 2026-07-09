@@ -42,6 +42,9 @@ pub fn is_private_ip(ip: IpAddr) -> bool {
                 || v4.is_multicast()
                 || v4.is_unspecified()
                 || v4.is_broadcast()
+                // CGNAT / shared address space (RFC 6598) — comments elsewhere
+                // claimed this was blocked; is_private() alone does not cover it.
+                || matches!(v4.octets(), [100, 64..=127, ..])
         }
         IpAddr::V6(v6) => {
             v6.is_loopback()
@@ -135,6 +138,15 @@ async fn query_whois_server(server: &str, query: &str) -> Result<String, String>
                 "refusing WHOIS connection: peer {ip} is private/internal"
             ));
         }
+    }
+
+    // WHOIS is a line-oriented protocol. Reject CR/LF (and other controls) so a
+    // malicious query cannot inject extra WHOIS commands on the wire.
+    if query.bytes().any(|b| b < 0x20 || b == 0x7f) {
+        return Err("refusing WHOIS query: control characters not allowed".into());
+    }
+    if query.len() > 253 {
+        return Err("refusing WHOIS query: too long".into());
     }
 
     stream

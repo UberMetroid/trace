@@ -20,6 +20,15 @@ fn rejects_ipv4_link_local() {
 }
 
 #[test]
+fn rejects_ipv4_cgnat() {
+    assert!(is_private_ip("100.64.0.1".parse().unwrap()));
+    assert!(is_private_ip("100.127.255.255".parse().unwrap()));
+    // Just outside CGNAT should remain public (subject to other checks).
+    assert!(!is_private_ip("100.63.255.255".parse().unwrap()));
+    assert!(!is_private_ip("100.128.0.1".parse().unwrap()));
+}
+
+#[test]
 fn rejects_ipv4_multicast_and_unspecified() {
     assert!(is_private_ip("224.0.0.1".parse().unwrap()));
     assert!(is_private_ip(IpAddr::V4(Ipv4Addr::UNSPECIFIED)));
