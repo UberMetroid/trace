@@ -5,7 +5,7 @@
 # Build stage: rust official image (reliable wasm32 + trunk). Runtime is pure UBI.
 #
 # Build (Podman):
-#   cd ~/Projects/ubermetroid/trace
+#   cd ~/Projects/etecoons/trace
 #   podman build -f Containerfile.ubi -t trace-ubi:latest .
 #
 # Run:
@@ -18,7 +18,7 @@
 #
 
 # Compare size:
-#   podman images | grep -E 'trace-ubi|ubermetroid/trace'
+#   podman images | grep -E 'trace-ubi|etecoons/trace'
 # =============================================================================
 
 # ---------- build: compile backend + WASM frontend ----------

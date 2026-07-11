@@ -1,6 +1,6 @@
 services:
   trace:
-    image: ubermetroid/trace:latest
+    image: etecoons/trace:latest
     container_name: trace
     restart: unless-stopped
     ports:
