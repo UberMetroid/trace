@@ -1,4 +1,4 @@
-# Trace — Blazing Fast WHOIS & IP Lookup <img src="https://raw.githubusercontent.com/UberMetroid/unraid-templates/main/icons/trace.png" width="48" height="48" alt="trace logo" align="right">
+# Trace — Blazing Fast WHOIS & IP Lookup <img src="https://raw.githubusercontent.com/etecoons/unraid-apps/main/icons/trace.png" width="48" height="48" alt="trace logo" align="right">
 
 Trace is a clean, secure, and lightning-fast WHOIS, IP, and ASN lookup web utility. Built with a high-performance Rust (Axum/Tokio) backend and a WebAssembly (Yew) frontend.
 
