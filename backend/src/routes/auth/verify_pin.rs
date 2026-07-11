@@ -90,7 +90,8 @@ pub async fn verify_pin(
             .await
             .insert(session_id.clone());
 
-        let cookie_max_age = Duration::from_secs((state.config.0.cookie_max_age_hours * 3600) as u64);
+        let cookie_max_age =
+            Duration::from_secs((state.config.0.cookie_max_age_hours * 3600) as u64);
         let secure = headers
             .get("x-forwarded-proto")
             .and_then(|v| v.to_str().ok())
@@ -118,11 +119,7 @@ pub async fn verify_pin(
             .into_response()
     } else {
         let attempt = attempts::record_attempt(&ip_str);
-        let remaining = state
-            .config
-            .0
-            .max_attempts
-            .saturating_sub(attempt.count);
+        let remaining = state.config.0.max_attempts.saturating_sub(attempt.count);
         tracing::warn!(
             target: "auth",
             "failed PIN attempt #{count} from {ip_str}",

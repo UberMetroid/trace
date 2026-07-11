@@ -5,9 +5,9 @@ use crate::types::*;
 use crate::utils::{get_hash, get_query_param, scroll_to_element};
 
 use gloo_net::http::Request;
+use shared_frontend::i18n::strings::{StringKey, lookup};
 use shared_frontend::storage::StorageService;
 use shared_frontend::theme::Theme;
-use shared_frontend::i18n::strings::{lookup, StringKey};
 use yew::prelude::*;
 
 impl App {
@@ -21,8 +21,10 @@ impl App {
             Msg::PerformLookup => {
                 let trimmed = self.query.trim().to_string();
                 if trimmed.is_empty() {
-                    ctx.link()
-                        .send_message(Msg::ShowToast(lookup(StringKey::StatusValidationError, self.language).to_string(), true));
+                    ctx.link().send_message(Msg::ShowToast(
+                        lookup(StringKey::StatusValidationError, self.language).to_string(),
+                        true,
+                    ));
                     return false;
                 }
                 self.loading = true;
@@ -115,7 +117,10 @@ impl App {
                 self.is_authenticated = true;
                 self.pin_input = String::new();
                 self.error_message = None;
-                ctx.link().send_message(Msg::ShowToast(lookup(StringKey::StatusPinSuccess, self.language).to_string(), false));
+                ctx.link().send_message(Msg::ShowToast(
+                    lookup(StringKey::StatusPinSuccess, self.language).to_string(),
+                    false,
+                ));
                 true
             }
             Msg::VerifyPinFailure(err) => {
@@ -123,7 +128,10 @@ impl App {
                 if !err.is_empty() {
                     self.error_message = Some(err);
                 }
-                ctx.link().send_message(Msg::ShowToast(lookup(StringKey::StatusPinFailure, self.language).to_string(), true));
+                ctx.link().send_message(Msg::ShowToast(
+                    lookup(StringKey::StatusPinFailure, self.language).to_string(),
+                    true,
+                ));
                 true
             }
             Msg::Logout => {
@@ -140,7 +148,10 @@ impl App {
                 self.error_message = None;
                 self.response = None;
                 self.query = String::new();
-                ctx.link().send_message(Msg::ShowToast(lookup(StringKey::StatusLogout, self.language).to_string(), false));
+                ctx.link().send_message(Msg::ShowToast(
+                    lookup(StringKey::StatusLogout, self.language).to_string(),
+                    false,
+                ));
                 true
             }
             Msg::ToggleTheme => {
@@ -163,7 +174,10 @@ impl App {
                         }
                     }
                 }
-                ctx.link().send_message(Msg::ShowToast(lookup(StringKey::StatusThemeChanged, self.language).to_string(), false));
+                ctx.link().send_message(Msg::ShowToast(
+                    lookup(StringKey::StatusThemeChanged, self.language).to_string(),
+                    false,
+                ));
                 true
             }
             Msg::SwitchLanguage(lang) => {
@@ -187,9 +201,7 @@ impl App {
                 }
                 true
             }
-            Msg::DismissToast(_) => {
-                true
-            }
+            Msg::DismissToast(_) => true,
             Msg::PrintPage => {
                 if let Some(window) = web_sys::window() {
                     let title = self.query.trim();
@@ -202,9 +214,15 @@ impl App {
                         doc.set_title(&original_title);
                     }
                     if print_res.is_ok() {
-                        ctx.link().send_message(Msg::ShowToast(lookup(StringKey::StatusPrintSuccess, self.language).to_string(), false));
+                        ctx.link().send_message(Msg::ShowToast(
+                            lookup(StringKey::StatusPrintSuccess, self.language).to_string(),
+                            false,
+                        ));
                     } else {
-                        ctx.link().send_message(Msg::ShowToast(lookup(StringKey::StatusPrintFailure, self.language).to_string(), true));
+                        ctx.link().send_message(Msg::ShowToast(
+                            lookup(StringKey::StatusPrintFailure, self.language).to_string(),
+                            true,
+                        ));
                     }
                 }
                 false
@@ -215,7 +233,10 @@ impl App {
                 } else {
                     (StringKey::StatusOffline, true)
                 };
-                ctx.link().send_message(Msg::ShowToast(lookup(msg_key, self.language).to_string(), is_error));
+                ctx.link().send_message(Msg::ShowToast(
+                    lookup(msg_key, self.language).to_string(),
+                    is_error,
+                ));
                 true
             }
             Msg::Nothing => false,
@@ -231,20 +252,22 @@ impl App {
 
             use wasm_bindgen::JsCast;
             let window = web_sys::window().unwrap();
-            
+
             let link_online = ctx.link().clone();
-            let on_online = wasm_bindgen::prelude::Closure::<dyn FnMut(_)>::new(move |_: web_sys::Event| {
-                link_online.send_message(Msg::OnlineStatusChanged(true));
-            });
+            let on_online =
+                wasm_bindgen::prelude::Closure::<dyn FnMut(_)>::new(move |_: web_sys::Event| {
+                    link_online.send_message(Msg::OnlineStatusChanged(true));
+                });
             window
                 .add_event_listener_with_callback("online", on_online.as_ref().unchecked_ref())
                 .unwrap();
             on_online.forget();
 
             let link_offline = ctx.link().clone();
-            let on_offline = wasm_bindgen::prelude::Closure::<dyn FnMut(_)>::new(move |_: web_sys::Event| {
-                link_offline.send_message(Msg::OnlineStatusChanged(false));
-            });
+            let on_offline =
+                wasm_bindgen::prelude::Closure::<dyn FnMut(_)>::new(move |_: web_sys::Event| {
+                    link_offline.send_message(Msg::OnlineStatusChanged(false));
+                });
             window
                 .add_event_listener_with_callback("offline", on_offline.as_ref().unchecked_ref())
                 .unwrap();
