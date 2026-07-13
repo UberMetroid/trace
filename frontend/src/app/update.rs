@@ -2,7 +2,7 @@ use crate::api::fetch_lookup;
 use crate::app::App;
 use crate::i18n::{get_translations, save_language};
 use crate::types::*;
-use crate::utils::{get_hash, scroll_to_element};
+use crate::whois_and_navigation_helpers::{get_hash, scroll_to_element};
 
 use gloo_net::http::Request;
 use shared_frontend::i18n::strings::{StringKey, lookup};

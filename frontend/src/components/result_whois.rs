@@ -1,6 +1,6 @@
 use crate::i18n::Translations;
 use crate::types::WhoisData;
-use crate::utils::{format_date, get_registrar_fn};
+use crate::whois_and_navigation_helpers::{format_date, get_registrar_fn};
 use yew::prelude::*;
 
 #[derive(Properties, PartialEq)]

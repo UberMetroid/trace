@@ -1,6 +1,6 @@
 use crate::i18n::Translations;
 use crate::types::AsnData;
-use crate::utils::format_date;
+use crate::whois_and_navigation_helpers::format_date;
 use yew::prelude::*;
 
 #[derive(Properties, PartialEq)]

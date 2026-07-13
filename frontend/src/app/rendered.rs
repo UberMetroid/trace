@@ -1,6 +1,6 @@
 use crate::app::App;
 use crate::types::Msg;
-use crate::utils::get_query_param;
+use crate::whois_and_navigation_helpers::get_query_param;
 use yew::prelude::*;
 
 impl App {

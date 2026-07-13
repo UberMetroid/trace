@@ -5,7 +5,7 @@ mod app;
 mod components;
 mod i18n;
 mod types;
-mod utils;
+mod whois_and_navigation_helpers;
 
 fn main() {
     yew::Renderer::<app::App>::new().render();
