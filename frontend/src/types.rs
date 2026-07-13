@@ -117,6 +117,7 @@ pub enum Msg {
     ToggleTheme,
     SwitchLanguage(Language),
     ShowToast(String, bool),
+    #[allow(dead_code)]
     DismissToast(usize),
     PrintPage,
     OnlineStatusChanged(bool),

@@ -35,7 +35,7 @@ pub async fn pin_required(
     Json(serde_json::json!({
         "required": state.config.0.pin.is_some(),
         "length": state.config.0.pin.as_ref().map(|p| p.len()).unwrap_or(0),
-        "locked": attempts::is_locked_out(&ip_str, state.config.0.max_attempts as u32, lockout_dur),
+        "locked": attempts::is_locked_out(&ip_str, state.config.0.max_attempts, lockout_dur),
         "enable_translation": state.config.0.enable_translation,
         "enable_themes": state.config.0.enable_themes,
         "enable_print": state.config.0.enable_print,

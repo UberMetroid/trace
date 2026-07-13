@@ -14,7 +14,9 @@ pub struct App {
     pub loading: bool,
     pub error: Option<String>,
     pub response: Option<LookupResponse>,
+    #[allow(dead_code)]
     pub toasts: Vec<Toast>,
+    #[allow(dead_code)]
     pub next_toast_id: usize,
     pub status_text: String,
     pub status_type: String,
