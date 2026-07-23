@@ -1,3 +1,5 @@
+mod cookie_auth;
+mod session_id;
 #![allow(clippy::collapsible_if, clippy::unnecessary_map_or)]
 
 use axum::{Router, middleware, routing::get};
