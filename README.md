@@ -93,12 +93,8 @@ Distributed under the Apache 2.0 License. See [LICENSE](LICENSE) for details.
 
 ---
 
-### Project Banner Showcase
-
-Official **Trace** project banner displaying network diagnostics, WHOIS, IP, and ASN tracer visual aesthetics.
-
 <p align="center">
   <a href="https://github.com/studio2201/trace">
-    <img src="assets/trace-header.jpg" alt="studio2201 banner" width="100%">
+    <img src="assets/corgi-footer.jpg" alt="studio2201 banner" width="100%">
   </a>
 </p>
