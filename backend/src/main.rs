@@ -34,7 +34,7 @@ const RATE_LIMIT_WINDOW: Duration = Duration::from_secs(60);
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     init_tracing(default_log_dir().as_deref());
 
-    let config = AppConfig::load();
+    let config = AppConfig::load_from_env(4404);
     let client = reqwest::Client::builder()
         .timeout(Duration::from_secs(10))
         .build()?;
