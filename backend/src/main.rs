@@ -17,6 +17,7 @@ mod config;
 mod cookie_auth;
 mod routes;
 pub mod services;
+pub mod middleware;
 mod session_id;
 mod state;
 pub mod utils;
@@ -54,7 +55,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     });
 
     let server_config = Arc::new(ServerConfig::from_env("TRACE"));
-    let cors = cors_layer(&server_config);
+    let cors = cors_layer(&crate::middleware::CorsState(server_config.clone()));
 
     let api_routes = Router::new()
         .route(
@@ -95,10 +96,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             title_injection_layer,
         ))
         .layer(middleware::from_fn_with_state(
-            HstsState(server_config.clone()),
+            crate::middleware::HstsState(server_config.clone()),
             hsts_layer,
         ))
-        .layer(middleware::from_fn(security_headers_layer))
+        .layer(middleware::from_fn_with_state(crate::middleware::SecurityHeadersState(server_config.clone()), crate::middleware::security_headers_layer))
         .layer(tower_http::trace::TraceLayer::new_for_http())
         .layer(cors)
         .with_state(state);
